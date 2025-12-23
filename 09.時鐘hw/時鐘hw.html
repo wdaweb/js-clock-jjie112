@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fascinate+Inline&display=swap" rel="stylesheet">
+    <title>時鐘</title>
+
+
+    <style>
+        body {
+            /* background: #000; */
+            background: url('./images/123.png') no-repeat;
+            margin: auto;
+        }
+
+        .clock {
+
+            width: 700px;
+            height: 700px;
+            border-radius: 50%;
+            background: url('./images/moon.png') center / cover no-repeat;
+            /* margin: 0vh auto 0px; */
+            margin: auto;
+            position: relative;
+            top: 0;
+            left: 0;
+        }
+
+        .hour,
+        .minute,
+        .second {
+            position: absolute;
+            border-radius: 10px;
+            transform-origin: left center;
+        }
+
+        .hour {
+            width: 79px;
+            height: 10px;
+            background: #4DA3FF;
+            left: 50%;
+            top: calc(50% - 5px);
+        }
+
+        .minute {
+            width: 111px;
+            height: 7px;
+            background: #77CCFF;
+            left: 50%;
+            top: calc(50% - 3.5px);
+        }
+
+        .second {
+            width: 142.5px;
+            height: 4px;
+            background: #00FFD0;
+            left: 50%;
+            top: calc(50% - 2px);
+        }
+
+        .spindle {
+            width: 10px;
+            height: 10px;
+            background: white;
+            position: absolute;
+            border-radius: 50%;
+            left: 49%;
+            top: calc(50% - 5px);
+        }
+
+        .text {
+            text-align: center;
+            font-size: 4rem;
+            color: #fff;
+            font-family: "Fascinate Inline", sans-serif;
+        }
+
+        .number {
+            position: absolute;
+            color: lightslategray;
+            font-size: 2rem;
+            font-family: "Fascinate Inline", sans-serif;
+            transform: translate(-50%, -50%);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="clock">
+        <div class="hour"></div>
+        <div class="minute"></div>
+        <div class="second"></div>
+        <!-- 軸心 -->
+        <div class="spindle"></div>
+        <!-- 刻度 -->
+    </div>
+
+    <div class="text">
+        <span class="hourText"></span> :
+        <span class="minuteText"></span> :
+        <span class="secText"></span>
+    </div>
+
+
+    <script>
+        const nowHour = document.querySelector('.hour')
+        const nowMinute = document.querySelector('.minute')
+        const nowSecond = document.querySelector('.second')
+        const nowHourText = document.querySelector('.hourText')
+        const nowMinuteText = document.querySelector('.minuteText')
+        const nowSecondText = document.querySelector('.secText')
+        const clockEl = document.querySelector('.clock');
+
+        const radius = 225; // 數字離中心的距離（依時鐘大小調）
+        for (let i = 1; i <= 12; i++) {
+            const num = document.createElement('div');
+            num.className = 'number';
+            num.innerText = i;
+
+            // 每個數字的角度（12 在正上方）
+            const angle = (i * 30 - 90) * (Math.PI / 180);
+
+            const cx = clockEl.offsetWidth / 2;
+            const cy = clockEl.offsetHeight / 2;
+
+            const x = cx + radius * Math.cos(angle);
+            const y = cy + radius * Math.sin(angle);
+
+            num.style.left = `${x}px`;
+            num.style.top = `${y}px`;
+
+            clockEl.appendChild(num);
+        }
+
+        const clock = () => {
+            const date = new Date()
+            const h = date.getHours()
+            const m = date.getMinutes()
+            const s = date.getSeconds()
+
+            // 角度計算
+            // 秒針：每秒 6 度
+            const secondDeg = s * 6;
+            // 分針：每分 6 度 + 秒的進度 (0.1 度/秒)
+            const minuteDeg = m * 6 + s * 0.1;
+            // 時針：每小時 30 度 + 每分 0.5 度
+            const hourDeg = (h % 12) * 30 + m * 0.5;
+
+            // 設定旋轉（加上 -90° 讓 12 點方向對齊）
+            nowHour.style.transform = `rotate(${hourDeg - 90}deg)`;
+            nowMinute.style.transform = `rotate(${minuteDeg - 90}deg)`;
+            nowSecond.style.transform = `rotate(${secondDeg - 90}deg)`;
+
+
+            nowHourText.innerText = h.toString().padStart(2, "0");
+            nowMinuteText.innerText = m.toString().padStart(2, "0");
+            nowSecondText.innerText = s.toString().padStart(2, "0");
+        }
+
+        setInterval(clock, 1000);
+        clock(); // 初始化時立即執行
+    </script>
+</body>
+
+</html>
